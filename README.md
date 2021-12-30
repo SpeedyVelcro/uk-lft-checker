@@ -11,7 +11,7 @@ Clone the repository and then you can run the script. You may have to set the ex
 chmod +x lateral-flow.py
 ```
 
-## Usuage
+## Usage
 Run as follows:
 ```bash
 ./lateral-flow.py
