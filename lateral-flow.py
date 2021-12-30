@@ -61,10 +61,11 @@ while (True):
     else:
         print("At " + timestamp + " tests were not available")
         save_source = save_unavailable
-        notification.notify(
-                title="LFTs unavailable",
-                message="Lateral flow tests are unavailable.",
-                timeout=10
+        if notify_desktop_unavailable:
+            notification.notify(
+                    title="LFTs unavailable",
+                    message="Lateral flow tests are unavailable.",
+                    timeout=10
         )
 
     
