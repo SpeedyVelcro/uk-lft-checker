@@ -12,6 +12,7 @@ parser.add_argument("-s", "--save-available", dest="save_available", action="sto
 parser.add_argument("-S", "--save-unavailable", dest="save_unavailable", action="store_true", help="Saves HTML source when LFTs are not available")
 parser.add_argument("-n", "--notify-desktop-available", dest="notify_desktop_available", action="store_true", help="Send a desktop notification when LFTs are available")
 parser.add_argument("-N", "--notify-desktop-unavailable", dest="notify_desktop_unavailable", action="store_true", help="Send a desktop notification when LFTs are unavailable")
+parser.add_argument("-r", "--restart", dest="restart_browser", action="store_true", help="Close the web driver after checking the page. May help on systems with low memory specs as web driver is only running when checking")
 parser.add_argument("-b", "--browser", dest="headless_browser", action="store_false", help="Display the browser")
 parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Print extra debug information")
 
@@ -23,6 +24,7 @@ verbose = args.verbose
 notify_desktop_available = args.notify_desktop_available
 notify_desktop_unavailable = args.notify_desktop_unavailable
 headless_browser = args.headless_browser
+restart_browser = args.restart_browser
 
 url = "https://test-for-coronavirus.service.gov.uk/order-lateral-flow-kits"
 search_string = "Sorry, there are no home delivery slots left for rapid lateral flow tests right now"
@@ -31,12 +33,16 @@ error_sleep_time = sleep_time
 chrome_options = Options()
 if headless_browser:
     chrome_options.add_argument("--headless")
-driver = webdriver.Chrome(options=chrome_options)
+if not restart_browser: # Because if restart_browser is true, it'll start at beginning of loop
+    driver = webdriver.Chrome(options=chrome_options)
 
 
 while (True):
     now = datetime.now()
     timestamp = now.strftime("%c")
+
+    if restart_browser:
+        driver = webdriver.Chrome(options=chrome_options)
 
     try:
         driver.get(url)
@@ -77,5 +83,8 @@ while (True):
             print("IO error when saving HTML file")
         finally:
             f.close()
+
+    if restart_browser:
+        driver.quit() # Quit between checks to save memory
 
     time.sleep(sleep_time)
